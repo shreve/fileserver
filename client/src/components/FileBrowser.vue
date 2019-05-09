@@ -41,7 +41,7 @@ export default {
   },
   computed: {
     readPath: function() {
-      let bits = decodeURIComponent(location.pathname.split('/')).filter(String)
+      let bits = decodeURIComponent(location.pathname).split('/').filter(String)
       let vbits = window.env_config.prefix.split('/').filter(String)
       while (bits[0] == vbits[0] && bits[0] != undefined) {
         bits.shift();
