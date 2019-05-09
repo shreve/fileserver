@@ -40,6 +40,15 @@ export default {
     }
   },
   computed: {
+    readPath: function() {
+      let bits = location.pathname.split('/').filter(String)
+      let vbits = window.env_config.prefix.split('/').filter(String)
+      while (bits[0] == vbits[0] && bits[0] != undefined) {
+        bits = bits.shift();
+        bits = vbits.shift();
+      }
+      return bits;
+    },
     virtualPath: function() {
       return window.env_config.prefix + this.path.join('/');
     },
@@ -75,11 +84,7 @@ export default {
     }
   },
   created: function() {
-    this.path = location
-      .pathname
-      .replace(window.env_config.prefix, '')
-      .split('/')
-      .filter(String)
+    this.path = this.readPath;
 
     this.fetchList();
     history.replaceState({ path: this.path }, location.pathname)
