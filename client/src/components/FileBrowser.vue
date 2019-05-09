@@ -44,8 +44,8 @@ export default {
       let bits = location.pathname.split('/').filter(String)
       let vbits = window.env_config.prefix.split('/').filter(String)
       while (bits[0] == vbits[0] && bits[0] != undefined) {
-        bits = bits.shift();
-        bits = vbits.shift();
+        bits.shift();
+        vbits.shift();
       }
       return bits;
     },

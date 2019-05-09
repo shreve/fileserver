@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"io/ioutil"
+	"path/filepath"
 )
 
 type File struct {
@@ -22,7 +23,7 @@ func GetAllFiles(path string) ([]File, error) {
 			info.Name(),
 			info.IsDir(),
 			zipExists(path, info),
-			info.Size()}
+			size(config.Root + path, info)}
 		files = append(files, file)
 	}
 	return files, nil
@@ -36,4 +37,15 @@ func zipExists(path string, info os.FileInfo) bool {
 		return !os.IsNotExist(err)
 	}
 	return false
+}
+
+func size(path string, info os.FileInfo) int64 {
+	if (!info.IsDir()) { return info.Size() }
+	var out int64 = 0
+	filepath.Walk(path + info.Name(), func(path string, file os.FileInfo, err error) error {
+		if (err != nil) { return err }
+		out += size(path, file)
+		return nil
+	})
+	return out
 }
