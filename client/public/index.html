@@ -11,6 +11,9 @@
      window.env_config = {
        "prefix": "{{.Prefix}}"
      }
+     if (env_config.prefix[env_config.prefix.length - 1] != "/") {
+       env_config.prefix += "/";
+     }
     </script>
   </head>
   <body>

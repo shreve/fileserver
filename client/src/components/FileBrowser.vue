@@ -41,14 +41,17 @@ export default {
   },
   computed: {
     virtualPath: function() {
-      return window.env_config.prefix + '/' + this.path.join('/');
+      return window.env_config.prefix + this.path.join('/');
+    },
+    apiPath: function() {
+      return window.env_config.prefix + 'api';
     }
   },
   methods: {
     fetchList: function() {
       let params = { path: '/' + this.path.join('/') }
       this.$http
-        .get(window.env_config.prefix + '/api/list', { params })
+        .get(this.apiPath + '/list', { params })
         .then(response => {
           this.files = response.body
         })
@@ -58,7 +61,7 @@ export default {
         this.path.push(file.name)
         this.visitPath();
       } else {
-        window.location = window.env_config.prefix + '/__files/' + this.path.join('/') + '/' + file.name;
+        window.location = window.env_config.prefix + '__files/' + this.path.join('/') + '/' + file.name;
       }
     },
     handleBreadClick: function(path) {
@@ -66,6 +69,7 @@ export default {
       this.visitPath();
     },
     visitPath: function() {
+      console.log(this.virtualPath);
       history.pushState({ path: this.path }, '', this.virtualPath)
       this.fetchList();
     }
@@ -81,10 +85,11 @@ export default {
     history.replaceState({ path: this.path }, location.pathname)
 
     window.onpopstate = (event) => {
-      console.log(event);
       this.path = event.state.path;
       this.fetchList();
     }
+
+    setInterval(() => { this.fetchList() }, 5000);
   }
 }
 </script>
