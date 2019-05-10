@@ -16,8 +16,9 @@
       <tr v-for="file in files"
           :key="file.name"
           @click="handleClick(file)">
+        <td>{{icon(file)}}</td>
         <td>{{file.name}}<span v-if="file.dir">/</span></td>
-        <td><span v-if="!file.dir"><file-size :bytes="file.size"></file-size></span></td>
+        <td><file-size :bytes="file.size"></file-size></td>
       </tr>
     </tbody>
   </table>
@@ -81,6 +82,10 @@ export default {
       console.log(this.virtualPath);
       history.pushState({ path: this.path }, '', this.virtualPath)
       this.fetchList();
+    },
+    icon: function(file) {
+      if (file.dir) { return 'D'; }
+      return 'F';
     }
   },
   created: function() {
