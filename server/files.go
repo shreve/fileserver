@@ -42,7 +42,7 @@ func zipExists(path string, info os.FileInfo) bool {
 func size(path string, info os.FileInfo) int64 {
 	if (!info.IsDir()) { return info.Size() }
 	var out int64 = 0
-	filepath.Walk(path + info.Name(), func(path string, file os.FileInfo, err error) error {
+	filepath.Walk(path + "/" + info.Name(), func(path string, file os.FileInfo, err error) error {
 		if (err != nil) { return err }
 		out += size(path, file)
 		return nil

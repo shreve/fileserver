@@ -8,6 +8,7 @@
         </th>
       </tr>
       <tr>
+        <th></th>
         <th>Name</th>
         <th>Size</th>
       </tr>
