@@ -5,4 +5,5 @@ services:
     ports:
       - 8080:80
     volumes:
-      - /home/jacob/Music:/files
+      - /data:/files
+      - /tmp:/tmp
