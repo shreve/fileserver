@@ -23,8 +23,9 @@ func Logging(f http.Handler) http.Handler {
 func CORS(f http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*");
-		w.Header().Set("Content-Type", "application/json");
 		w.Header().Set("Access-Control-Allow-Methods", "GET,HEAD,POST,PUT,OPTIONS");
+		w.Header().Set("Access-Control-Allow-Headers", "content-type");
+		w.Header().Set("Content-Type", "application/json");
 		if r.Method == "OPTIONS" { return; }
 		f.ServeHTTP(w, r)
 	})

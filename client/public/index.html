@@ -4,16 +4,29 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <base href="{{.Prefix}}/"/>
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title>fileserver</title>
     <script>
-     window.env_config = {
-       "prefix": "{{.Prefix}}"
+     let config = {
+       prefix: "{{.Prefix}}",
+       api: "{{.Host}}"
      }
-     if (env_config.prefix[env_config.prefix.length - 1] != "/") {
-       env_config.prefix += "/";
+     if (config.prefix.slice(2, 9) === ".Prefix") {
+       config.prefix = "/"
      }
+     if (config.api.slice(2, 7) == ".Host") {
+       config.api = "http://localhost:8080"
+     }
+     if (config.prefix[config.prefix.length - 1] != "/") {
+       config.prefix += "/";
+     }
+
+     window.env_config = config;
+
+     let base = document.createElement('base');
+     base.href = config.prefix;
+     document.head.appendChild(base);
+
     </script>
   </head>
   <body>

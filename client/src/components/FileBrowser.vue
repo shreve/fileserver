@@ -3,7 +3,7 @@
   <table>
     <thead>
       <tr>
-        <th colspan="2" class="path">
+        <th colspan="3" class="path">
           <path-breadcrumb :path="path" @change="handleBreadClick"></path-breadcrumb>
         </th>
       </tr>
@@ -16,8 +16,8 @@
     <tbody>
       <tr v-for="file in files"
           :key="file.name"
-          @click="handleClick(file)">
-        <td>{{icon(file)}}</td>
+          @click="handleClick($event, file)">
+        <td><download-button :file="file" :path="stringPath"></download-button></td>
         <td>{{file.name}}<span v-if="file.dir">/</span></td>
         <td><file-size :bytes="file.size"></file-size></td>
       </tr>
@@ -27,18 +27,22 @@
 </template>
 
 <script>
-  import PathBreadcrumb from './PathBreadcrumb'
-  import FileSize from './FileSize'
+import PathBreadcrumb from './PathBreadcrumb'
+import FileSize from './FileSize'
+import DownloadButton from './DownloadButton'
 
 export default {
   components: {
     PathBreadcrumb,
-    FileSize
+    FileSize,
+    DownloadButton
   },
   data: function() {
     return {
       path: [],
-      files: []
+      files: [],
+      cache: {},
+      pending: false
     }
   },
   computed: {
@@ -52,27 +56,35 @@ export default {
       return bits;
     },
     virtualPath: function() {
-      return window.env_config.prefix + this.path.join('/');
+      return (window.env_config.prefix + this.path.join('/')).replace(/^\/+\//, '/');
     },
     apiPath: function() {
-      return window.env_config.prefix + 'api';
+      return window.env_config.api + window.env_config.prefix + 'api';
+    },
+    stringPath: function() {
+      return this.path.join('/')
     }
   },
   methods: {
     fetchList: function() {
+      this.pending = true
       let params = { path: '/' + this.path.join('/') }
       this.$http
-        .get(this.apiPath + '/list', { params })
+        .get('list', { params })
         .then(response => {
           this.files = response.body
+          this.cache[this.path] = response.body
+          this.pending = false
         })
     },
-    handleClick: function(file) {
+    handleClick: function(event, file) {
       if (file.dir) {
+        if (this.pending) { return }
         this.path.push(file.name)
         this.visitPath();
       } else {
-        window.location = window.env_config.prefix + '__files/' + this.path.join('/') + '/' + file.name;
+        let path = encodeURI(this.virtualPath + '/' + file.name).replace(/^\/+\//, '/')
+        window.location = this.apiPath + '/download?path=' + path;
       }
     },
     handleBreadClick: function(path) {
@@ -80,9 +92,14 @@ export default {
       this.visitPath();
     },
     visitPath: function() {
-      console.log(this.virtualPath);
       history.pushState({ path: this.path }, '', this.virtualPath)
-      this.fetchList();
+      if (this.cache[this.path]) {
+        this.files = this.cache[this.path];
+        this.fetchList();
+        this.pending = false;
+      } else {
+        this.fetchList();
+      }
     },
     icon: function(file) {
       if (file.dir) { return 'D'; }
@@ -97,10 +114,10 @@ export default {
 
     window.onpopstate = (event) => {
       this.path = event.state.path;
-      this.fetchList();
+      this.visitPath();
     }
 
-    setInterval(() => { this.fetchList() }, 5000);
+    // setInterval(() => { this.fetchList() }, 5000);
   }
 }
 </script>
@@ -125,5 +142,8 @@ tbody tr:hover
 
 .path
   border-bottom: 1px solid #ddd
+
+td:first-child
+  width: 0
 
 </style>

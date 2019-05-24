@@ -10,6 +10,7 @@ type Config struct {
 	Root string
 	TmpDir string
 	Prefix string
+	Host string
 }
 
 func (c *Config) Load() {
@@ -18,7 +19,8 @@ func (c *Config) Load() {
 		return here
 	});
 	c.TmpDir = "/tmp/zipfs" + c.Root;
-	c.Prefix = c.getEnv("FILES_PREFIX", func() string { return "/" })
+	c.Prefix = c.getEnvS("FILES_PREFIX", "/")
+	c.Host = c.getEnvS("FILES_HOST", "http://localhost:8080")
 }
 
 func (c *Config) Inspect() {
@@ -29,4 +31,10 @@ func (c Config) getEnv(key string, def func() string) string {
 	val, found := os.LookupEnv(key)
 	if (found) { return val }
 	return def()
+}
+
+func (c Config) getEnvS(key, def string) string {
+	val, found := os.LookupEnv(key)
+	if (found) { return val }
+	return def
 }
