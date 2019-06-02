@@ -24,6 +24,7 @@ This is written with vue.js and go.
 * Looks nice
 * Contains entire path from the root
 * Compress and download entire directories from the browser
+* Coming soon: move and rename files
 * More coming later I guess
 
 ## Development Setup

@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <h1>Files</h1>
     <file-browser></file-browser>
   </div>
 </template>
