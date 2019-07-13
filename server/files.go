@@ -114,7 +114,7 @@ func StatusFile(path string) error {
 
 func zipExists(path string, info os.FileInfo) bool {
 	if (!info.IsDir()) { return false }
-	zip := config.TmpDir + path + info.Name() + ".zip"
+	zip := filepath.Clean(config.TmpDir + path + "/" + info.Name() + ".zip")
 	log.Printf("Zip to test: %s", zip)
 	if _, err := os.Stat(zip); err == nil {
 		return true
